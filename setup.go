@@ -6,6 +6,7 @@ import (
 	"github.com/coredns/caddy"
 	"github.com/coredns/coredns/core/dnsserver"
 	"github.com/coredns/coredns/plugin"
+	nomad "github.com/hashicorp/nomad/api"
 )
 
 // init registers this plugin.
@@ -28,20 +29,31 @@ func setup(c *caddy.Controller) error {
 }
 
 func parse(c *caddy.Controller, n Nomad) error {
+	nomadConfig := nomad.DefaultConfig()
+	nomadConfig.TLSConfig.Insecure = false
+
 	for c.Next() {
 		for c.NextBlock() {
 			selector := strings.ToLower(c.Val())
 
 			switch selector {
-			case "foo":
-				n.Foo = c.RemainingArgs()[0]
-			case "bar":
-				n.Bar = c.RemainingArgs()[0]
+			case "address":
+				nomadConfig.Address = c.RemainingArgs()[0]
+			case "token":
+				nomadConfig.SecretID = c.RemainingArgs()[0]
+			case "tls-insecure":
+				nomadConfig.TLSConfig.Insecure = true
 			default:
 				return c.Errf("unknown property '%s'", selector)
 			}
 		}
 	}
+
+	nomadClient, err := nomad.NewClient(nomadConfig)
+	if err != nil {
+		return plugin.Error("nomad", err)
+	}
+	n.NomadClient = nomadClient
 
 	return nil
 }

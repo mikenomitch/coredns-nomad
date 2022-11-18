@@ -15,20 +15,12 @@ const pluginName = "nomad"
 
 var log = clog.NewWithPlugin(pluginName)
 
+// TODO: Figure out what to do with Zones
 // Nomad is a plugin that serves records for Nomad services
 type Nomad struct {
 	Zones       []string
-	Foo         string
-	Bar         string
 	NomadClient *nomad.Client
 	Next        plugin.Handler
-}
-
-// New returns a initialized Nomad.
-func New(zones []string) *Nomad {
-	n := new(Nomad)
-	n.Zones = zones
-	return n
 }
 
 // ServeDNS implements the plugin.Handler interface. This method gets called when example is used
