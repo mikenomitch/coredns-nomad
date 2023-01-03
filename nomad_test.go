@@ -78,7 +78,7 @@ func TestServeDNS(t *testing.T) {
 	// n.client = fake.NewSimpleClientset()
 	ctx := context.Background()
 
-	// SET UP NOMAD OR FAKE NOMAD SERVER
+	// TODO: SET UP NOMAD OR FAKE NOMAD SERVER
 
 	runTests(t, ctx, &n, cases)
 }
